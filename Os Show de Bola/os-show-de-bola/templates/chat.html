@@ -1,0 +1,12 @@
+{% extends "base.html" %} {% block conteudo %}
+
+<form method="POST" action="">
+  {{ send_message_form.hidden_tag() }}
+
+  <label for="">{{ send_message_form.message_field.label }}</label>
+  {{ send_message_form.message_field }} <br />
+
+  {{ send_message_form.submit_send_message }}
+</form>
+
+{% endblock %}

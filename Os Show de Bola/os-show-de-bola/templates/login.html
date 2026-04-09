@@ -1,0 +1,14 @@
+{% extends "base.html" %} {% block conteudo %}
+
+<form method="POST" action="">
+  {{ login_form.hidden_tag() }}
+
+  <label for="">{{ login_form.name.label }}</label>
+  {{ login_form.name }} <br />
+  <label for="">{{ login_form.password.label }}</label>
+  {{ login_form.password }} <br />
+
+  {{ login_form.submit }}
+</form>
+
+{% endblock %}

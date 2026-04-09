@@ -1,0 +1,16 @@
+{% extends "base.html" %} {% block conteudo %}
+
+<form method="POST" action="">
+  {{ logout_button.hidden_tag() }} {{ logout_button.submit_logout }}
+</form>
+
+<form method="POST" action="">
+  {{ add_contact_form.hidden_tag() }}
+
+  <label for="">{{ add_contact_form.contact_name.label }}</label>
+  {{ add_contact_form.contact_name }} <br />
+
+  {{ add_contact_form.submit_add_contact }}
+</form>
+
+{% endblock %}

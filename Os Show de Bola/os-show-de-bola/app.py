@@ -7,76 +7,103 @@ from flask import (
     make_response,
     session,
 )
-from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SubmitField
-from wtforms.validators import DataRequired
 from entities.User import User
+from forms.LoginForm import LoginForm
+from forms.AddContactForm import AddContactForm
+from forms.LogoutButton import LogoutButton
+from forms.SendMessageForm import SendMessageForm
 
 app = Flask(__name__)
 app.secret_key = "sdidisfusdhfufhabcdefg"
 
-
 users = [
-    User("pablo", "0000"),
+    User("pablo", "0000", ["maximiliano"]),
     User("maximiliano", "0000"),
 ]
 
 
-class loginForm(FlaskForm):
-    name = StringField("Usuário:", validators=[DataRequired()])
-    password = StringField("Senha:", validators=[DataRequired()])
-    submit = SubmitField("Entrar")
+def getUser(name):
+    for user in users:
+        if user.name == name:
+            return user
+
+
+def userExists(name):
+    for user in users:
+        if user.name == name:
+            return True
+
+    return False
 
 
 @app.route("/", methods=["GET", "POST"])
-def home():
-    form = loginForm()
+def loginPage():
+    login_form = LoginForm()
 
-    if form.validate_on_submit():
+    if login_form.validate_on_submit():
         for user in users:
             if (
-                user.name.lower() == form.name.data.lower()
-                and user.password == form.password.data
+                user.name.lower() == login_form.name.data.lower()
+                and user.password == login_form.password.data
             ):
-                session["user"] = user
-                return redirect(url_for("telaLogado"))
+                session["user"] = user.name
+                return redirect(url_for("homePage"))
 
-    return render_template("index.html", form=form)
+    return render_template("login.html", login_form=login_form)
 
 
-@app.route("/logado", methods=["POST", "GET"])
-def telaLogado():
+@app.route("/home", methods=["GET", "POST"])
+def homePage():
+    if not ("user" in session):
+        return redirect(url_for("loginPage"))
 
-    if "user" in session:
-        logout = Logout()
-        if logout.validate_on_submit():
-            session.pop("user", None)
-            return redirect(url_for("home"))
+    logout_button = LogoutButton()
+    add_contact_form = AddContactForm()
 
-        addContactForm = AddContactForm()
-        if addContactForm.validate_on_submit():
-            contactName = addContactForm.contactName.data
+    if logout_button.submit_logout.data and logout_button.validate():
+        session.pop("user", None)
+        return redirect(url_for("loginPage"))
 
-            for user in users:
-                if contactName == user.name:
-                    session["user"].addContact(contactName)
+    if add_contact_form.submit_add_contact.data and add_contact_form.validate():
+        contact_name = add_contact_form.contact_name.data
 
-            print(session["user"])
+        if not userExists(contact_name):
+            print("não existente")
+        else:
+            logged_user = getUser(session["user"])
+            logged_user.add_contact_name(contact_name)
+            print(logged_user)
+            print("Contato adicionado")
 
-        return render_template(
-            "logado.html", logout=logout, addContactForm=addContactForm
-        )
+    return render_template(
+        "home.html", logout_button=logout_button, add_contact_form=add_contact_form
+    )
+
+
+@app.route("/chat/<contact_name>", methods=["GET", "POST"])
+def chatPage(contact_name):
+    if not ("user" in session):
+        return redirect(url_for("loginPage"))
+
+    logged_user = getUser(session["user"])
+
+    isContactValid = False
+    for contact in logged_user.contact_names:
+        print(contact)
+        print(contact_name)
+
+        if contact == contact_name:
+            isContactValid = True
+
+    if isContactValid:
+        send_message_form = SendMessageForm()
+
+        if send_message_form.validate_on_submit():
+            return redirect(url_for("chatPage", contact_name=contact_name))
     else:
-        return redirect(url_for("home"))
+        return "Contato fake xD"
 
-
-class Logout(FlaskForm):
-    submit = SubmitField("Sair")
-
-
-class AddContactForm(FlaskForm):
-    contactName = StringField("Contato:", validators=[DataRequired()])
-    submit = SubmitField("Adicionar")
+    return render_template("chat.html", send_message_form=send_message_form)
 
 
 if __name__ == "__main__":
