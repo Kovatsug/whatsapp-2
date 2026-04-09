@@ -87,9 +87,6 @@ def chatPage(contact_name):
 
     isContactValid = False
     for contact in logged_user.contact_names:
-        print(contact)
-        print(contact_name)
-
         if contact == contact_name:
             isContactValid = True
 
@@ -97,6 +94,9 @@ def chatPage(contact_name):
         send_message_form = SendMessageForm()
 
         if send_message_form.validate_on_submit():
+            message = send_message_form.message_field.data
+            print(message)
+
             return redirect(url_for("chatPage", contact_name=contact_name))
     else:
         return "Contato fake xD"
