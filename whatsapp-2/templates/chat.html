@@ -1,4 +1,7 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} {% block content %} {% for message_to_show in
+messages_to_show %}
+<li>{{ message_to_show.sender_name }}: {{ message_to_show.content }}</li>
+{% endfor %}
 
 <form method="POST" action="">
   {{ send_message_form.hidden_tag() }}

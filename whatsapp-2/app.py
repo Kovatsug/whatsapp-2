@@ -6,6 +6,7 @@ from flask import (
     session,
 )
 from entities.User import User
+from entities.Message import Message
 from forms.LoginForm import LoginForm
 from forms.AddContactForm import AddContactForm
 from forms.LogoutButton import LogoutButton
@@ -16,7 +17,12 @@ app.secret_key = "sdidisfusdhfufhabcdefg"
 
 users = [
     User("pablo", "0000", ["maximiliano"]),
-    User("maximiliano", "0000"),
+    User("maximiliano", "0000", ["pablo"]),
+]
+
+messages = [
+    Message("pablo", "maximiliano", "oi"),
+    Message("maximiliano", "pablo", "olá"),
 ]
 
 
@@ -90,18 +96,34 @@ def chatPage(contact_name):
         if contact == contact_name:
             isContactValid = True
 
-    if isContactValid:
-        send_message_form = SendMessageForm()
+    if not isContactValid:
+        return "Contato não encontrado"
 
-        if send_message_form.validate_on_submit():
-            message = send_message_form.message_field.data
-            print(message)
+    send_message_form = SendMessageForm()
 
-            return redirect(url_for("chatPage", contact_name=contact_name))
-    else:
-        return "Contato fake xD"
+    if send_message_form.validate_on_submit():
+        message_content = send_message_form.message_field.data
+        messages.append(Message(logged_user.name, contact_name, message_content))
 
-    return render_template("chat.html", send_message_form=send_message_form)
+        return redirect(url_for("chatPage", contact_name=contact_name))
+
+    messages_to_show = []
+
+    for message in messages:
+        if (
+            message.sender_name == logged_user.name
+            and message.receiver_name == contact_name
+        ) or (
+            message.sender_name == contact_name
+            and message.receiver_name == logged_user.name
+        ):
+            messages_to_show.append(message)
+
+    return render_template(
+        "chat.html",
+        send_message_form=send_message_form,
+        messages_to_show=messages_to_show,
+    )
 
 
 if __name__ == "__main__":
