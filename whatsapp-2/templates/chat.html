@@ -1,6 +1,8 @@
 {% extends "base.html" %} {% block content %} {% for message_to_show in
 messages_to_show %}
-<li>{{ message_to_show.sender_name }}: {{ message_to_show.content }}</li>
+<li class="{{'logged' if message_to_show.sender_name == logged_user_name}}">
+  {{ message_to_show.sender_name }}: {{ message_to_show.content }}
+</li>
 {% endfor %}
 
 <form method="POST" action="">

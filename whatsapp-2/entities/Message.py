@@ -4,6 +4,13 @@ class Message:
         self.receiver_name = receiver_name
         self.content = content
 
+    def to_dict(self):
+        return {
+            "sender_name": self.sender_name,
+            "receiver_name": self.receiver_name,
+            "content": self.content,
+        }
+
     def add_contact_name(self, contact_name):
         self.contact_names.append(contact_name)
 
