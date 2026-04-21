@@ -89,19 +89,14 @@ def homePage():
         if not userExists(contact_name):
             message = "Usuário não encontrado"
         else:
-            user = getUser(contact_name)
-            logged_user = User(user["name"], user["password"], user["contact_names"])
-            logged_user.add_contact_name(contact_name)
-
-            logged_user_dict = logged_user.to_dict()
-
+            logged_user = getUser(session["user"])
+            logged_user["contact_names"].append(contact_name)
             users_cookie = request.cookies.get("users")
+            users = json.loads(users_cookie)
 
-            if users_cookie:
-                users = json.loads(users_cookie)
-                users.append(logged_user_dict)
-            else:
-                users = [logged_user_dict]
+            for user in users:
+                if user["name"] == logged_user["name"]:
+                    user["contact_names"] = logged_user["contact_names"]
 
             response = redirect(
                 url_for("homePage", message="Contato adicionado com sucesso")
@@ -152,7 +147,7 @@ def chatPage(contact_name):
     logged_user = getUser(session["user"])
 
     isContactValid = False
-    for contact in logged_user.contact_names:
+    for contact in logged_user["contact_names"]:
         if contact == contact_name:
             isContactValid = True
 
@@ -163,7 +158,7 @@ def chatPage(contact_name):
 
     if send_message_form.validate_on_submit():
         message_content = send_message_form.message_field.data
-        message = Message(logged_user.name, contact_name, message_content)
+        message = Message(logged_user["name"], contact_name, message_content)
         message_dict = message.to_dict()
 
         messages_cookie = request.cookies.get("messages")
@@ -181,18 +176,20 @@ def chatPage(contact_name):
 
     messages_cookie = request.cookies.get("messages")
 
+    messages_list = []
+
     if messages_cookie:
-        messages = json.loads(messages_cookie)
+        messages_list = json.loads(messages_cookie)
 
     messages_to_show = []
 
-    for message in messages:
+    for message in messages_list:
         if (
-            message["sender_name"] == logged_user.name
+            message["sender_name"] == logged_user["name"]
             and message["receiver_name"] == contact_name
         ) or (
             message["sender_name"] == contact_name
-            and message["receiver_name"] == logged_user.name
+            and message["receiver_name"] == logged_user["name"]
         ):
             messages_to_show.append(
                 Message(
@@ -202,7 +199,7 @@ def chatPage(contact_name):
 
     return render_template(
         "chat.html",
-        logged_user_name=logged_user.name,
+        logged_user_name=logged_user["name"],
         send_message_form=send_message_form,
         messages_to_show=messages_to_show,
     )
