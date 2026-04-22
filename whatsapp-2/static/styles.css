@@ -1,3 +1,173 @@
 .logged {
   text-align: end;
 }
+
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+/* Fundo com gradiente bonito */
+body {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f172a, #1e293b, #0ea5e9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e2e8f0;
+  list-style: none;
+}
+
+/* Container principal */
+.container {
+  width: 100%;
+  max-width: 420px;
+  padding: 30px;
+  border-radius: 16px;
+
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Título */
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+/* Inputs */
+input {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 15px;
+
+  border-radius: 10px;
+  border: none;
+
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+
+  outline: none;
+  transition: 0.2s;
+}
+
+input::placeholder {
+  color: #94a3b8;
+}
+
+input:focus {
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 2px #0ea5e9;
+}
+
+/* Botão */
+button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+
+  background: linear-gradient(135deg, #0ea5e9, #22c55e);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(14, 165, 233, 0.3);
+}
+
+/* Mensagem */
+.message {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* Sucesso */
+.message.success {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+/* Erro */
+.message.error {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+/* Links */
+a {
+  color: #38bdf8;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Layout geral */
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  color: #e2e8f0;
+}
+
+/* Título */
+h1 {
+  text-align: center;
+  padding: 20px;
+  font-size: 200px;
+  font-weight: 600;
+
+  background: linear-gradient(90deg, #0ea5e9, #22c55e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  letter-spacing: 1px;
+}
+
+/* Linha */
+hr {
+  border: none;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0 20px;
+}
+
+/* Conteúdo central cresce */
+.content {
+  flex: 1;
+  padding: 20px;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 15px;
+  font-size: 14px;
+
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+}

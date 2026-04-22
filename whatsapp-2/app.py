@@ -77,14 +77,14 @@ def homePage():
     logout_button = LogoutButton()
     add_contact_form = AddContactForm()
 
-    message = request.args.get("message", "")
+    message = session.pop("message", "")
 
     if logout_button.submit_logout.data and logout_button.validate():
         session.pop("user", None)
         return redirect(url_for("loginPage"))
 
     if add_contact_form.submit_add_contact.data and add_contact_form.validate():
-        contact_name = add_contact_form.contact_name.data
+        contact_name = add_contact_form.contact_name.data.lower()
 
         if not userExists(contact_name):
             message = "Usuário não encontrado"
@@ -98,11 +98,19 @@ def homePage():
                 if user["name"] == logged_user["name"]:
                     user["contact_names"] = logged_user["contact_names"]
 
+
+            session["message"] = "Contato adicionado com sucesso"
             response = redirect(
-                url_for("homePage", message="Contato adicionado com sucesso")
+                url_for("homePage")
             )
             response.set_cookie("users", json.dumps(users))
             return response
+        
+    if add_contact_form.submit_conversation.data and add_contact_form.validate():
+        contact_name = add_contact_form.contact_name.data.lower()
+        
+        return redirect(url_for("chatPage",contact_name=contact_name))
+
 
     return render_template(
         "home.html",
@@ -115,10 +123,18 @@ def homePage():
 @app.route("/register", methods=["GET", "POST"])
 def registerPage():
     account_form = AccountForm()
+    message = session.pop("message", "")
 
     if account_form.validate_on_submit():
-        name = account_form.name.data
+        name = account_form.name.data.lower()
         password = account_form.password.data
+
+        for user in getUsers():
+            if name == user["name"]:
+                session["message"] = "Usuário ja existente"
+
+                return redirect(url_for("registerPage"))
+
 
         user = User(name, password, contact_names=[])
         user_dict = user.to_dict()
@@ -136,7 +152,7 @@ def registerPage():
 
         return response
 
-    return render_template("register.html", account_form=account_form)
+    return render_template("register.html", account_form=account_form, message=message)
 
 
 @app.route("/chat/<contact_name>", methods=["GET", "POST"])
